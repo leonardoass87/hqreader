@@ -1,85 +1,80 @@
-import { useParams, useNavigate } from 'react-router-dom'
-import mangas from '../data/mangas.json'
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+// Tipo do mangá com capítulos (expandível no futuro)
+type Manga = {
+  id: number;
+  titulo: string;
+  descricao: string;
+  capa: string;
+  // capítulos poderiam ser adicionados aqui no futuro: capitulos: Capitulo[]
+};
 
 function DescricaoManga() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const manga = mangas.find(m => m.id === id)
+  const { id } = useParams(); // Pega o ID da URL
+  const navigate = useNavigate();
 
-  if (!manga) return <p className="text-white p-6">Mangá não encontrado.</p>
+  const [manga, setManga] = useState<Manga | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const primeiroCap = manga.capitulos[0]
-  const ultimoCap = manga.capitulos[manga.capitulos.length - 1]
+  // Busca os dados do mangá assim que a tela carrega
+  useEffect(() => {
+    fetch(`http://localhost:8000/api/mangas/${id}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setManga(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar o mangá:", err);
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) return <p className="text-center text-white">Carregando...</p>;
+  if (!manga) return <p className="text-center text-white">Mangá não encontrado.</p>;
 
   return (
-    <div className="bg-black text-white min-h-screen p-6 space-y-6">
-      <div className="flex flex-col md:flex-row gap-6">
+    <div className="min-h-screen bg-black text-white p-6">
+      <button
+        onClick={() => navigate(-1)}
+        className="text-green-400 hover:underline mb-4"
+      >
+        ← Voltar
+      </button>
+
+      {/* Dados do mangá */}
+      <div className="flex flex-col md:flex-row gap-6 items-start">
         <img
-          src={manga.capa}
+          src={`http://localhost:8000${manga.capa}`}
           alt={manga.titulo}
           className="w-[210px] h-[300px] object-cover rounded"
         />
+        <div>
+          <h1 className="text-2xl font-bold mb-2">{manga.titulo}</h1>
+          <p className="text-gray-300 mb-4">{manga.descricao}</p>
 
-        <div className="flex-1 space-y-3">
-          <h1 className="text-3xl font-bold">{manga.titulo}</h1>
-          <h2 className="text-lg italic text-gray-400">{manga.subtitulo}</h2>
-
-          <div className="flex flex-wrap gap-2">
-            {manga.tags.map((tag, i) => (
-              <span
-                key={i}
-                className="bg-zinc-700 text-sm px-3 py-1 rounded-full"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          <p className="text-gray-300 text-sm">{manga.descricao}</p>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-400 pt-2">
-            <div><strong>Status:</strong> {manga.status}</div>
-            <div><strong>Tipo:</strong> {manga.tipo}</div>
-            <div><strong>Autor:</strong> {manga.autor}</div>
-            <div><strong>Lançado:</strong> {manga.lancado_em}</div>
-            <div><strong>Atualizado:</strong> {manga.atualizado_em}</div>
-            <div><strong>Views:</strong> {manga.visualizacoes.toLocaleString()}</div>
-          </div>
+          {/* Aqui no futuro: Autor, status, gênero etc. */}
         </div>
       </div>
 
-      <div className="bg-zinc-800 p-4 rounded">
-        <h3 className="font-semibold text-lg mb-3">Capítulos</h3>
-        <div className="flex gap-4 mb-4">
-          <button
-            onClick={() => navigate(`/leitor/${manga.id}/${primeiroCap.numero}`)}
-            className="bg-red-700 px-4 py-2 rounded hover:bg-red-600"
-          >
-            Primeiro Capítulo
-          </button>
-          <button
-            onClick={() => navigate(`/leitor/${manga.id}/${ultimoCap.numero}`)}
-            className="bg-red-700 px-4 py-2 rounded hover:bg-red-600"
-          >
-            Capítulo Recente
-          </button>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {manga.capitulos.map((cap) => (
+      {/* Simulação de capítulos */}
+      <section className="mt-10">
+        <h2 className="text-lg font-semibold mb-4">Capítulos</h2>
+        <div className="space-y-2">
+          {[1, 2, 3].map((capitulo) => (
             <button
-              key={cap.numero}
-              onClick={() => navigate(`/leitor/${manga.id}/${cap.numero}`)}
-              className="bg-zinc-700 hover:bg-zinc-600 text-sm px-4 py-2 rounded text-left"
+              key={capitulo}
+              onClick={() => navigate(`/leitor/${manga.id}/${capitulo}`)}
+              className="w-full text-left px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded"
             >
-              <strong>Capítulo {cap.numero}</strong>
-              <div className="text-xs text-gray-400">{cap.data}</div>
+              Capítulo {capitulo}
             </button>
           ))}
         </div>
-      </div>
+      </section>
     </div>
-  )
+  );
 }
 
-export default DescricaoManga
+export default DescricaoManga;

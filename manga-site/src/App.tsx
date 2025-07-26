@@ -1,8 +1,37 @@
-import mangas from "./data/mangas.json";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+// Define o tipo dos dados que a API vai retornar
+type Manga = {
+  id: number;
+  titulo: string;
+  descricao: string;
+  capa: string;
+};
 
 function App() {
-  const navigate = useNavigate(); // ✅ agora está sendo usada
+  const navigate = useNavigate();
+
+  // Estado para armazenar a lista de mangás
+  const [mangas, setMangas] = useState<Manga[]>([]);
+
+  // Estado de carregamento (enquanto busca os dados da API)
+  const [loading, setLoading] = useState(true);
+
+  // useEffect é executado uma vez quando o componente é montado
+  useEffect(() => {
+    fetch("http://localhost:8000/api/mangas")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data); // 👈 veja aqui se vieram os dados
+        setMangas(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Erro ao buscar mangás:", err);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white font-sans">
@@ -40,7 +69,7 @@ function App() {
       <main className="flex flex-col md:flex-row gap-6 p-6">
         {/* COLUNA ESQUERDA */}
         <div className="flex-1 space-y-8">
-          {/* POPULARES */}
+          {/* POPULARES (simulação fixa) */}
           <section>
             <h2 className="text-lg font-bold mb-2">Populares</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -68,23 +97,29 @@ function App() {
                 </button>
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              {mangas.map((manga) => (
-                <div
-                  key={manga.id}
-                  className="bg-zinc-800 rounded cursor-pointer hover:bg-zinc-700 p-4 flex flex-col items-center text-center"
-                  onClick={() => navigate(`/manga/${manga.id}`)}
-                >
-                  <img
-                    src={manga.capa}
-                    alt={manga.titulo}
-                  className="w-[210px] h-[300px] object-cover rounded mb-2 mx-auto"
-                  />
-                  <h2 className="text-md font-semibold">{manga.titulo}</h2>
-                  <p className="text-sm text-gray-400">{manga.descricao}</p>
-                </div>
-              ))}
-            </div>
+
+            {/* Se estiver carregando, mostra o texto de carregamento */}
+            {loading ? (
+              <p className="text-gray-400">Carregando mangás...</p>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                {mangas.map((manga) => (
+                  <div
+                    key={manga.id}
+                    className="bg-zinc-800 rounded cursor-pointer hover:bg-zinc-700 p-4 flex flex-col items-center text-center"
+                    onClick={() => navigate(`/manga/${manga.id}`)} // Redireciona para a página de descrição
+                  >
+                    <img
+                      src={`http://localhost:8000${manga.capa}`} // Capa recebida da API
+                      alt={manga.titulo}
+                      className="w-[210px] h-[300px] object-cover rounded mb-2 mx-auto"
+                    />
+                    <h2 className="text-md font-semibold">{manga.titulo}</h2>
+                    <p className="text-sm text-gray-400">{manga.descricao}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         </div>
 
