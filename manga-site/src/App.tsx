@@ -52,8 +52,20 @@ function App() {
             placeholder="Buscar mangá..."
             className="bg-zinc-800 text-white px-4 py-1 rounded outline-none"
           />
+          {localStorage.getItem("adminName") && (
+            <span className="text-sm text-green-400 font-semibold">
+              {localStorage.getItem("adminName")}
+            </span>
+          )}
           <button
-            onClick={() => navigate("/admin/login")}
+            onClick={() => {
+              const token = localStorage.getItem("adminToken");
+              if (token) {
+                navigate("/admin/dashboard");
+              } else {
+                navigate("/admin/login");
+              }
+            }}
             className="text-white hover:text-green-400 transition"
             title="Área Admin"
           >

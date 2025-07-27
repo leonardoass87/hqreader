@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Define o tipo dos dados de um mangá
 type Manga = {
@@ -24,6 +24,17 @@ function AdminDashboard() {
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [tituloEditado, setTituloEditado] = useState("");
   const [descricaoEditada, setDescricaoEditada] = useState("");
+
+  const navigate = useNavigate();
+
+  // Verifica autenticação ao carregar
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      console.warn("Usuário não autenticado. Redirecionando para login...");
+      navigate("/admin");
+    }
+  }, [navigate]);
 
   useEffect(() => {
     fetch("http://localhost:8000/api/mangas")
@@ -111,17 +122,35 @@ function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
-      <div className="mb-4">
+      <div className="mb-4 flex justify-between items-center">
         <Link
           to="/"
           className="bg-blue-600 hover:bg-blue-500 px-3 py-1 rounded text-white text-sm"
         >
           ← Voltar para Home
         </Link>
+
+        {/* Exibe nome do admin logado se existir */}
+        {localStorage.getItem("adminName") && (
+          <div className="text-sm text-right">
+            <p className="font-bold text-green-400">Logado como: {localStorage.getItem("adminName")}</p>
+            <button
+              onClick={() => {
+                localStorage.removeItem("adminToken");
+                localStorage.removeItem("adminName");
+                navigate("/admin");
+              }}
+              className="text-red-400 hover:text-red-200 text-xs underline"
+            >
+              Sair
+            </button>
+          </div>
+        )}
       </div>
 
       <h1 className="text-2xl font-bold mb-4">Painel do Administrador</h1>
 
+      {/* Formulário de cadastro */}
       <form onSubmit={handleSubmit} className="mb-8 bg-zinc-900 p-4 rounded space-y-4">
         <h2 className="text-xl font-semibold mb-2">Adicionar Novo Mangá</h2>
 
@@ -164,6 +193,7 @@ function AdminDashboard() {
 
       <h2 className="text-xl font-semibold mb-4">Mangás Cadastrados</h2>
 
+      {/* Tabela de mangás */}
       <div className="bg-zinc-900 rounded overflow-hidden shadow">
         <table className="w-full table-auto text-sm">
           <thead className="bg-zinc-800 text-gray-300">
