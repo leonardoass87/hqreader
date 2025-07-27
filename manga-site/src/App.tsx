@@ -46,11 +46,20 @@ function App() {
             Mangás
           </a>
         </nav>
-        <input
-          type="text"
-          placeholder="Buscar mangá..."
-          className="bg-zinc-800 text-white px-4 py-1 rounded outline-none"
-        />
+        <div className="flex items-center gap-4">
+          <input
+            type="text"
+            placeholder="Buscar mangá..."
+            className="bg-zinc-800 text-white px-4 py-1 rounded outline-none"
+          />
+          <button
+            onClick={() => navigate("/admin/login")}
+            className="text-white hover:text-green-400 transition"
+            title="Área Admin"
+          >
+            👤
+          </button>
+        </div>
       </header>
 
       {/* CARROSSEL */}

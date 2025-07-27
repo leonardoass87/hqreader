@@ -1,32 +1,30 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware  # ✅ CORS vem logo após os imports principais
-from routers import mangas
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.staticfiles import StaticFiles
+from routers import mangas, admin  # ✅ Inclui o admin aqui
 import os
+import jwt
 
 
 app = FastAPI()
 
-
-# Configuração manual (sem settings.py)
-app.mount(
-    "/static",
-    StaticFiles(directory="C:/Temp/Uploads/Mangas"),
-    name="static"
-)
-
-# ✅ Configuração do CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Durante o dev, pode deixar assim. Depois defina os domínios específicos.
+    allow_origins=["*"],  # ou ["*"] para liberar tudo (não recomendado em prod)
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ✅ Inclui as rotas dos mangás
+# ✅ Rotas de Admin
+app.include_router(admin.router)
+
+# 👇 Adicione esta configuração logo após criar a instância `app`
+
+
+# ✅ Rotas de Mangás
 app.include_router(mangas.router)
 
-# ✅ Serve a pasta de imagens (capas e capítulos)
+# ✅ Pasta de imagens dos capítulos
+app.mount("/static", StaticFiles(directory="C:/Temp/Uploads/Mangas"), name="static")
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

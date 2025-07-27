@@ -24,10 +24,9 @@ class Capitulo(Base):
     paginas = Column(Integer)  # ✅ Número de páginas
     manga = relationship("Manga", back_populates="capitulos")
 
-    # id = Column(Integer, primary_key=True, index=True)
-    # manga_id = Column(Integer, ForeignKey("mangas.id"))
-    # numero = Column(Integer)
-    # pasta = Column(String)
+class Admin(Base):
+    __tablename__ = "admins"
 
-    # # Relacionamento reverso: o capítulo pertence a um mangá
-    # manga = relationship("Manga", back_populates="capitulos")
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    senha = Column(String, nullable=False)
