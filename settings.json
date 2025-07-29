@@ -1,0 +1,9 @@
+{
+  "git.untrackedChanges": "hidden",
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/*.pyc": true,
+    "**/*.db": true,
+    "**/uploads": false
+  }
+}
