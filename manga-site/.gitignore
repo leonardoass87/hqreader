@@ -31,3 +31,19 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Python virtual env (caso use backend em Python)
+.venv/
+__pycache__/
+
+# MangaScraper ou uploads locais
+uploads/
+downloads/
+*.zip
+*.webp
+
