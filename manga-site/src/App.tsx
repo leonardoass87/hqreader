@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Carrossel from "./components/Carrossel";
+import Sidebar from "./components/SideBar";
 
 // Define o tipo dos dados que a API vai retornar
 type Manga = {
@@ -35,8 +36,12 @@ function App() {
       <header className="bg-zinc-900 px-6 py-4 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-green-400">MReader</h1>
         <nav className="space-x-6">
-          <a href="#" className="hover:underline">Home</a>
-          <a href="#" className="hover:underline">Mangás</a>
+          <a href="#" className="hover:underline">
+            Home
+          </a>
+          <a href="#" className="hover:underline">
+            Mangás
+          </a>
         </nav>
         <div className="flex items-center gap-4">
           <input
@@ -122,30 +127,8 @@ function App() {
               )}
             </section>
           </div>
-
           {/* COLUNA LATERAL DIREITA */}
-          <aside className="w-full md:w-64 space-y-6">
-            <section>
-              <h2 className="text-md font-semibold mb-2">Top 10 da Semana</h2>
-              <ul className="space-y-1 text-sm">
-                {[...Array(5)].map((_, i) => (
-                  <li key={i} className="bg-zinc-800 px-3 py-2 rounded">
-                    📈 Mangá {i + 1}
-                  </li>
-                ))}
-              </ul>
-            </section>
-            <section>
-              <h2 className="text-md font-semibold mb-2">Top 10 do Mês</h2>
-              <ul className="space-y-1 text-sm">
-                {[...Array(5)].map((_, i) => (
-                  <li key={i} className="bg-zinc-800 px-3 py-2 rounded">
-                    🏆 Mangá {i + 1}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          </aside>
+          <Sidebar />
         </main>
       </div>
 

@@ -65,6 +65,17 @@ function Leitor() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Registra visualização do mangá
+  useEffect(() => {
+    if (id) {
+      fetch(`http://localhost:8000/api/mangas/${id}/view`, {
+        method: "POST",
+      }).catch((err) =>
+        console.error("Erro ao registrar visualização do mangá:", err)
+      );
+    }
+  }, [id]);
+
   const capituloAtual = capitulos.find((c) => c.numero === Number(capituloId));
   const indiceAtual = capitulos.findIndex(
     (c) => c.numero === Number(capituloId)

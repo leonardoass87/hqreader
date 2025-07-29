@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Optional
+from datetime import datetime
+
 
 # -----------------------------------------------
 # 📘 Schema de criação de mangá (entrada do POST)
@@ -47,3 +49,14 @@ class Manga(BaseModel):
 class AdminLogin(BaseModel):
     username: str             # Nome de usuário
     password: str             # Senha
+
+    # --------------------------------------------------
+# 📘 Schema de visualização de mangá (registro de view)
+# --------------------------------------------------
+class View(BaseModel):
+    id: int                   # ID da view
+    manga_id: int             # ID do mangá visualizado
+    timestamp: datetime       # Data/hora do acesso
+
+    class Config:
+        from_attributes = True  # Substitui orm_mode

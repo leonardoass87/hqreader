@@ -29,6 +29,16 @@ def get_db():
     finally:
         db.close()
 
+        # -------------------------------------------------------
+# GET /api/mangas/top - Retorna os mangás mais visualizados
+# -------------------------------------------------------
+@router.get("/top", response_model=list[schemas.Manga])
+def listar_mangas_mais_vistos(limit: int = 10, db: Session = Depends(get_db)):
+    try:
+        return crud.get_mangas_mais_vistos(db, limite=limit)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar mangás mais vistos: {str(e)}")
+
 # -------------------------------------------------------
 # GET /api/mangas/{manga_id} - Retorna um único mangá
 # -------------------------------------------------------
@@ -196,6 +206,9 @@ def upload_capitulo_com_imagens(
         print(f"[ERRO] Falha ao enviar capítulo: {str(e)}")  # 👈 Log local
         raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
     
+
+
+    
     # -------------------------------------------------------
 # DELETE /api/mangas/{id} - Remove um mangá
 # -------------------------------------------------------
@@ -208,4 +221,21 @@ def deletar_manga(manga_id: int, db: Session = Depends(get_db)):
     db.delete(manga)
     db.commit()
     return {"mensagem": "Mangá deletado com sucesso"}
+
+# -------------------------------------------------------
+# POST /api/mangas/{id}/view - Registra visualização de um mangá
+# -------------------------------------------------------
+@router.post("/{manga_id}/view")
+def registrar_view_manga(manga_id: int, db: Session = Depends(get_db)):
+    manga = crud.get_manga_by_id(db, manga_id)
+    if not manga:
+        raise HTTPException(status_code=404, detail="Mangá não encontrado")
+
+    # Cria nova view no banco
+    nova_view = models.View(manga_id=manga_id)
+    db.add(nova_view)
+    db.commit()
+    db.refresh(nova_view)
+
+    return {"mensagem": "Visualização registrada com sucesso", "view_id": nova_view.id}
 

@@ -1,5 +1,7 @@
 import os
 from sqlalchemy.orm import Session
+from sqlalchemy import func
+from sqlalchemy.orm import aliased
 import models, schemas
 from settings import UPLOADS_BASE_PATH  # Ex: UPLOADS_BASE_PATH = "C:/Temp/Uploads/Mangas"
 
@@ -73,3 +75,23 @@ def get_capitulo_por_numero(db: Session, manga_id: int, numero: int):
         models.Capitulo.manga_id == manga_id,
         models.Capitulo.numero == numero
     ).first()
+
+# --------------------------------------------------
+# 🏆 Retorna os mangás mais acessados (Top X)
+# --------------------------------------------------
+def get_mangas_mais_vistos(db: Session, limite: int = 10):
+    # Junta a tabela de mangás com as views e conta as visualizações por mangá
+    resultados = (
+        db.query(
+            models.Manga,
+            func.count(models.View.id).label("total_views")
+        )
+        .join(models.View, models.View.manga_id == models.Manga.id)
+        .group_by(models.Manga.id)
+        .order_by(func.count(models.View.id).desc())
+        .limit(limite)
+        .all()
+    )
+
+    # Retorna apenas os objetos Manga
+    return [r[0] for r in resultados]

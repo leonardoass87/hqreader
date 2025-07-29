@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy import DateTime, func
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -30,3 +31,14 @@ class Admin(Base):
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True, nullable=False)
     senha = Column(String, nullable=False)
+
+# Modelo da tabela "views"
+class View(Base):
+    __tablename__ = "views"
+
+    id = Column(Integer, primary_key=True, index=True)
+    manga_id = Column(Integer, ForeignKey("mangas.id"))
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+
+    # Relacionamento reverso (opcional)
+    manga = relationship("Manga", backref="views")
