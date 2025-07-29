@@ -38,7 +38,17 @@ def listar_mangas_mais_vistos(limit: int = 10, db: Session = Depends(get_db)):
         return crud.get_mangas_mais_vistos(db, limite=limit)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao buscar mangás mais vistos: {str(e)}")
-
+    
+# -------------------------------------------------------
+# GET /api/mangas/populares - Lista os mangás mais populares
+# -------------------------------------------------------
+@router.get("/populares", response_model=list[schemas.Manga])
+def listar_mangas_populares(db: Session = Depends(get_db)):
+    try:
+        return crud.get_mangas_mais_vistos(db, limite=10)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar populares: {str(e)}")
+        
 # -------------------------------------------------------
 # GET /api/mangas/{manga_id} - Retorna um único mangá
 # -------------------------------------------------------
@@ -238,4 +248,7 @@ def registrar_view_manga(manga_id: int, db: Session = Depends(get_db)):
     db.refresh(nova_view)
 
     return {"mensagem": "Visualização registrada com sucesso", "view_id": nova_view.id}
+
+
+
 
