@@ -37,13 +37,16 @@ dist-ssr
 .env.*
 !.env.example
 
-# Python virtual env (caso use backend em Python)
+# Python virtual env
 .venv/
 __pycache__/
+*.pyc
 
-# MangaScraper ou uploads locais
+# Banco de dados SQLite
+*.db
+
+# Arquivos do MangaScraper
 uploads/
 downloads/
 *.zip
 *.webp
-
